@@ -366,7 +366,7 @@ public:
   template<class NodeT>
   explicit Updater(
     NodeT node, double period = 1.0,
-    int starting_up_status = diagnostic_msgs::msg::DiagnosticStatus::OK)
+    int starting_up_status = diagnostic_msgs::msg::DiagnosticStatus::WARN)
   : Updater(
       node->get_node_base_interface(),
       node->get_node_clock_interface(),

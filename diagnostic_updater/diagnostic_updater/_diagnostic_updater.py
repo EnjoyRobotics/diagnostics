@@ -232,7 +232,7 @@ class Updater(DiagnosticTaskVector):
     interval.
     """
 
-    def __init__(self, node, period=1.0, starting_up_status=DiagnosticStatus.OK):
+    def __init__(self, node, period=1.0, starting_up_status=None):
         """Construct an updater class."""
         DiagnosticTaskVector.__init__(self)
         self.node = node
