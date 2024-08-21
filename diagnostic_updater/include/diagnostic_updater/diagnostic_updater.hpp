@@ -380,7 +380,7 @@ public:
 
   Updater(
     std::shared_ptr<rclcpp::node_interfaces::NodeBaseInterface> base_interface,
-    std::shared_ptr<rclcpp::node_interfaces::NodeClockInterface> clock_interface,
+    std::shared_ptr<rclcpp::node_interfaces::NodeClockInterface>,
     std::shared_ptr<rclcpp::node_interfaces::NodeLoggingInterface> logging_interface,
     std::shared_ptr<rclcpp::node_interfaces::NodeParametersInterface> parameters_interface,
     std::shared_ptr<rclcpp::node_interfaces::NodeTimersInterface> timers_interface,
@@ -390,7 +390,7 @@ public:
   : verbose_(false),
     base_interface_(base_interface),
     timers_interface_(timers_interface),
-    clock_(clock_interface->get_clock()),
+    clock_(std::make_shared<rclcpp::Clock>(RCL_STEADY_TIME)),
     period_(rclcpp::Duration::from_seconds(period)),
     publisher_(
       rclcpp::create_publisher<diagnostic_msgs::msg::DiagnosticArray>(
@@ -503,12 +503,12 @@ public:
 private:
   void reset_timer()
   {
-    update_timer_ = rclcpp::create_timer(
-      base_interface_,
-      timers_interface_,
-      clock_,
-      period_,
-      std::bind(&Updater::update, this));
+    update_timer_ = rclcpp::create_wall_timer(
+      period_.to_chrono<std::chrono::seconds>(),
+      std::bind(&Updater::update, this),
+      base_interface_->get_default_callback_group(),
+      base_interface_.get(),
+      timers_interface_.get());
   }
 
   /**
